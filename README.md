@@ -1,0 +1,1 @@
+This project implements an application which can take user images and create a tile puzzle from them
