@@ -25,15 +25,22 @@ public class Main {
 		Imgcodecs imageCodecs = new Imgcodecs();
 		String path = getPath("BoatDefault.jpg");
 		Mat img = imageCodecs.imread(path);
+		
+		// The following code is to crop the image
+		Mat[] pieces = cropImage(img);
+		
+		
+		Mat croppedImg = pieces[1];
+		
+		// The code below is there to display the image
 		MatOfByte mat = new MatOfByte();
-		Imgcodecs.imencode(".jpg", img, mat);
+		Imgcodecs.imencode(".jpg", croppedImg, mat);
 		byte[] byteArray = mat.toArray();
 		InputStream in = new ByteArrayInputStream(byteArray);
 		BufferedImage buf = null;
 		try {
 			buf = ImageIO.read(in);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		JFrame fr = new JFrame();
@@ -43,6 +50,34 @@ public class Main {
 		
 		System.out.println("Image loaded.");
 		
+	}
+	/**
+	 * 
+	 * @param image Image that will be cropped.
+	 * @return Array containing the original image split into 9 pieces.
+	 */
+	public static Mat[] cropImage(Mat image) {
+		Mat[] tiles = null;
+		
+		// Get the length of each tile, but only if the image is a square
+		if (image.width() == image.height()) {
+			System.out.println("Width: " + image.width());
+			System.out.println("Height: " + image.height());
+			System.out.println("Channels: " + image.channels());
+			
+			int tileLength = image.width() / 3;
+			tiles = new Mat[9];
+			int count = 0; // Iterator to traverse through the tiles array
+			
+			for (int i = 0; i < image.width(); i += tileLength) {
+				Mat cropHor = image.colRange(i, i + tileLength);
+				for(int j = 0; j < image.height(); j += tileLength) {
+					tiles[count] = cropHor.rowRange(j, j + tileLength);
+					count++;
+				}
+			}
+		}
+		return tiles;
 	}
 	/**
 	 * 
