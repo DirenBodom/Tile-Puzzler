@@ -4,9 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
+import javax.print.DocFlavor.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,6 +35,21 @@ public class Main {
 		// The following code is to crop the image
 		Mat[] pieces = cropImage(img);
 		
+		Path res = null;
+		try {
+			res = Paths.get(Main.class.getResource("BoatDefault.jpg").toURI());
+			int numerator = 1;
+			
+			for (Mat piece: pieces) {
+				System.out.println(numerator);
+				String out = res.getParent() + "/tiles/piece" + numerator + ".jpg";
+				imageCodecs.imwrite(out, piece);
+				numerator++;
+			}
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		Mat croppedImg = pieces[1];
 		
